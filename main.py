@@ -7,12 +7,11 @@ import json
 # 基础网址
 BASE_URL = "https://zh.v2nodes.com"
 
-# 需要抓取的页面 URL 列表（例如，第 1 页到第 3 页）
-PAGES = [
-    "https://zh.v2nodes.com/?page=1",
-    "https://zh.v2nodes.com/?page=2",
-    "https://zh.v2nodes.com/?page=3"
-]
+# 通过赋值的形式动态生成需要抓取的页面 URL 列表
+PAGE_START = 1  # 起始页
+PAGE_END = 3    # 结束页
+
+PAGES = [f"{BASE_URL}/?page={i}" for i in range(PAGE_START, PAGE_END + 1)]
 
 # 从环境变量中获取 GitHub Token 和 Gist ID
 GITHUB_TOKEN = os.getenv('MY_GITHUB_TOKEN')  # 从环境变量中读取
