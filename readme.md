@@ -74,7 +74,6 @@
 2. 如果你希望手动触发工作流，也可以在 GitHub 仓库页面的 **Actions** 标签下，点击相应的工作流，然后点击 **Run workflow** 按钮手动触发。
 
 ---
-
 ## 脚本运行输出
 
 - 如果配置抓取和上传成功，GitHub Actions 会输出类似以下的信息：
@@ -88,12 +87,11 @@ config内容...
 ...
 配置信息已上传到 GitHub Gist: https://gist.github.com/your_gist_id
 
-```bash
+---
 
-## 脚本运行输出
+## 使用方法
 
-访问 [GitHub Gist 页面](https://gist.github.com/)。找到配置信息上传的文件。
+使用方法
+访问 GitHub Gist 页面。找到配置信息上传的文件。
 
-![image](https://github.com/user-attachments/assets/bd375e76-b1d9-4963-87a1-c622a8d37f28)
-![image](https://github.com/user-attachments/assets/9e927fd0-0e12-4358-a837-6598b424830e)
 
