@@ -29,3 +29,8 @@ jobs:
         MY_GIST_ID: ${{ secrets.MY_GIST_ID }}
       run: |
         python main.py  # 替换为您的 Python 脚本文件名
+
+    - name: Check Git Configuration
+      run: |
+        git config --list  # 输出 Git 配置信息，确保 safe.directory 被正确配置
+        git config --get safe.directory  # 查看 safe.directory 配置
