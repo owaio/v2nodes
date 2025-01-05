@@ -19,87 +19,75 @@ GIST_ID = os.getenv('MY_GIST_ID')  # 从环境变量中读取
 
 # 用于提取每个服务器页面的基本信息
 def extract_server_info(server_url):
-    try:
-        # 获取服务器页面的内容
-        response = requests.get(server_url)
-        soup = BeautifulSoup(response.text, "html.parser")
-        
-        # 查找包含配置信息的 div 标签
-        config_div = soup.find("textarea", {"id": "config"})
-        
-        # 提取 config 属性
-        if config_div:
-            return config_div.get("data-config")
-        return None
-    except Exception as e:
-        print(f"抓取服务器 {server_url} 配置信息时出错: {str(e)}")
-        return None
+    # 获取服务器页面的内容
+    response = requests.get(server_url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    
+    # 查找包含配置信息的 textarea 标签
+    config_div = soup.find("textarea", {"id": "config"})
+    
+    # 提取 config 属性
+    if config_div:
+        return config_div.get("data-config")
+    return None
 
 # 获取页面中的服务器 ID 和链接
 def extract_server_links(page_url):
-    try:
-        # 获取页面的内容
-        response = requests.get(page_url)
-        soup = BeautifulSoup(response.text, "html.parser")
-        
-        # 查找所有服务器项
-        servers = soup.find_all("div", class_="col-md-12 servers")
-        
-        server_links = []
-        for server in servers:
-            # 提取服务器 ID
-            server_id = server.get("data-id")
-            if server_id:
-                # 生成服务器页面的完整链接
-                server_url = f"{BASE_URL}/servers/{server_id}/"
-                server_links.append(server_url)
-        
-        return server_links
-    except Exception as e:
-        print(f"抓取页面 {page_url} 链接时出错: {str(e)}")
-        return []
+    # 获取页面的内容
+    response = requests.get(page_url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    
+    # 查找所有服务器项
+    servers = soup.find_all("div", class_="col-md-12 servers")
+    
+    server_links = []
+    for server in servers:
+        # 提取服务器 ID
+        server_id = server.get("data-id")
+        if server_id:
+            # 生成服务器页面的完整链接
+            server_url = f"{BASE_URL}/servers/{server_id}/"
+            server_links.append(server_url)
+    
+    return server_links
 
 # 上传文件到 GitHub Gist
 def upload_to_gist(content, gist_id=None):
-    try:
-        url = "https://api.github.com/gists"
-        headers = {
-            "Authorization": f"token {GITHUB_TOKEN}",
-            "Accept": "application/vnd.github.v3+json"
-        }
-        
-        # 如果是更新 Gist
-        if gist_id:
-            url = f"https://api.github.com/gists/{gist_id}"
-            # 获取现有 Gist 的信息
-            response = requests.get(url, headers=headers)
-            if response.status_code != 200:
-                print(f"获取 Gist 信息失败: {response.status_code} - {response.text}")
-                return {}
-            gist_data = response.json()
-            gist_data['files']['server_configs.txt']['content'] = content
-            response = requests.patch(url, headers=headers, data=json.dumps(gist_data))
-        else:
-            # 创建新的 Gist
-            gist_data = {
-                "description": "V2Nodes Server Configurations",
-                "public": True,
-                "files": {
-                    "server_configs.txt": {
-                        "content": content
-                    }
+    url = "https://api.github.com/gists"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    
+    # 如果是更新 Gist
+    if gist_id:
+        url = f"https://api.github.com/gists/{gist_id}"
+        # 获取现有 Gist 的信息
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            print(f"Failed to fetch Gist: {response.text}")
+        gist_data = response.json()
+        gist_data['files']['server_configs.txt']['content'] = content
+        response = requests.patch(url, headers=headers, data=json.dumps(gist_data))
+    else:
+        # 创建新的 Gist
+        gist_data = {
+            "description": "V2Nodes Server Configurations",
+            "public": True,
+            "files": {
+                "server_configs.txt": {
+                    "content": content
                 }
             }
-            response = requests.post(url, headers=headers, data=json.dumps(gist_data))
-        
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print(f"上传 Gist 失败: {response.status_code} - {response.text}")
-            return {}
-    except Exception as e:
-        print(f"上传到 GitHub Gist 时出错: {str(e)}")
-        return {}
+        }
+        response = requests.post(url, headers=headers, data=json.dumps(gist_data))
+    
+    if response.status_code == 201:
+        print(f"成功上传 Gist: {response.json()['html_url']}")
+    else:
+        print(f"上传失败，响应: {response.text}")
+
+    return response.json()
 
 # 主程序
 def main():
@@ -120,7 +108,7 @@ def main():
             config = extract_server_info(server_url)
             if config:
                 all_server_configs.append(config)
-                print(config)  # 打印配置信息
+                print(f"抓取到的配置: {config}")  # 打印配置信息
             else:
                 print(f"未能提取配置：{server_url}")
             
@@ -133,7 +121,7 @@ def main():
     # 上传配置信息到 GitHub Gist
     gist_response = upload_to_gist(content, GIST_ID)
     
-    if gist_response and 'html_url' in gist_response:
+    if 'html_url' in gist_response:
         print(f"配置信息已上传到 GitHub Gist: {gist_response['html_url']}")
     else:
         print("上传失败", gist_response)
