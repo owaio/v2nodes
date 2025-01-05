@@ -3,7 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import json
+import base64
 
+# -------------------------- 配置抓取部分 --------------------------
 BASE_URL = "https://zh.v2nodes.com"
 PAGE_START = 1
 PAGE_END = 10
@@ -65,15 +67,36 @@ def upload_to_gist(content, gist_id=None):
         }
         response = requests.post(url, headers=headers, data=json.dumps(gist_data))
 
-    # 这里添加详细的调试信息
     if response.status_code != 200 and response.status_code != 201:
         print(f"上传 Gist 失败，响应代码: {response.status_code}")
         print(f"响应内容: {response.text}")
     
     return response.json()
 
+def fetch_country_data(country_abbr):
+    base_url = "https://www.v2nodes.com/subscriptions/country/"
+    url = base_url + country_abbr.lower() + "/"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.text  # 返回页面内容
+        else:
+            return f"Error: {response.status_code}"
+    except requests.exceptions.RequestException as e:
+        return f"Request failed: {e}"
+
+def decode_base64_data(data):
+    try:
+        decoded_data = base64.urlsafe_b64decode(data + '==').decode('utf-8')  # 补齐 Base64 缺失的字符
+        return decoded_data
+    except Exception as e:
+        return f"Decoding failed: {e}"
+
+# -------------------------- 抓取和解码功能 --------------------------
 def main():
     all_server_configs = []
+
+    # 第一部分：抓取 V2Nodes 服务器配置
     for page in PAGES:
         print(f"正在抓取页面: {page}")
         server_links = extract_server_links(page)
@@ -87,6 +110,25 @@ def main():
                 print(f"未能提取配置：{server_url}")
             time.sleep(1)
 
+    # 第二部分：抓取国家对应的链接并进行解码
+    countries = [
+        "AQ", "AR", "AU", "AT", "BH", "BY", "BE", "BO", "BR", "BG",
+        "CA", "CN", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HK"
+    ]
+
+    for country in countries:
+        data = fetch_country_data(country)
+        if "vless://" in data:
+            # 提取 Base64 数据
+            base64_data = data.split("vless://")[1].split("#")[0]
+            decoded_data = decode_base64_data(base64_data)
+            if decoded_data:
+                all_server_configs.append(decoded_data)
+                print(f"解码后的配置：\n{decoded_data}")
+        else:
+            print(f"没有找到 Base64 数据: {country}")
+
+    # 合并所有配置并上传到 Gist
     content = "\n".join(all_server_configs)
     gist_response = upload_to_gist(content, GIST_ID)
 
