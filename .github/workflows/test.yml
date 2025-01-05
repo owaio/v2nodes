@@ -2,32 +2,30 @@ name: 此工作流仅为测试使用
 
 on:
   schedule:
-    # 使用 cron 表达式设置定时运行时间，下面的例子表示每天的凌晨 1 点
-    - cron: '0 1 * * *'  # 每天 1 点运行
-
-  # 允许手动触发此工作流
-  workflow_dispatch:
+    # 每天凌晨 1 点运行
+    - cron: '0 1 * * *'
+  workflow_dispatch:  # 允许手动触发
 
 jobs:
-  run-python-script:
-    runs-on: ubuntu-latest  # 使用最新的 Ubuntu 环境
+  run_python_script:
+    runs-on: ubuntu-latest
 
     steps:
-      # 检出代码
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    # Check out the repository
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      # 设置 Python 环境
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'  # 可以指定你需要的 Python 版本
+    # 设置 Python 环境
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
 
-      # 安装依赖项
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt  # 如果有 requirements.txt 文件
+    # 安装依赖库 requests
+    - name: Install requests library
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
 
       # 运行 Python 脚本
       - name: Run Python script
