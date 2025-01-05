@@ -24,7 +24,7 @@ jobs:
       # 添加主项目为上游仓库
       - name: Add upstream repository
         run: |
-          git remote add upstream https://github.com/<your-username>/<upstream-repository>.git
+          git remote add upstream https://github.com/ttm533/v2nodes.git
           git fetch upstream
 
       # 合并主项目的最新提交到 fork 仓库
