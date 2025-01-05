@@ -1,0 +1,32 @@
+name: Run Python Script
+
+on:
+  push:
+    branches:
+      - main  # 可以替换为你使用的其他分支名称
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest  # 使用 Ubuntu 环境
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # 获取代码
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # 可以根据需要选择其他版本的 Python
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4  # 安装所需的 Python 包
+
+      - name: Run Python Script
+        run: |
+          python main.py  # 运行你的 Python 脚本文件
+          
