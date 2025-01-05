@@ -30,7 +30,7 @@ jobs:
         MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}  # 从 GitHub secrets 获取 GitHub Token
         MY_GIST_ID: ${{ secrets.MY_GIST_ID }}  # 从 GitHub secrets 获取 Gist ID
       run: |
-        python test.py  # 运行你的 Python 脚本
+        python main.py  # 运行你的 Python 脚本
 
     - name: Check Git Configuration
       run: |
