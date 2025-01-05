@@ -74,7 +74,7 @@
 2. 如果你希望手动触发工作流，也可以在 GitHub 仓库页面的 **Actions** 标签下，点击相应的工作流，然后点击 **Run workflow** 按钮手动触发。
 
 ---
-### 6.脚本运行输出
+## 脚本运行输出
 
 - 如果配置抓取和上传成功，GitHub Actions 会输出类似以下的信息：
 
@@ -86,12 +86,13 @@ config内容...
 正在抓取页面: https://zh.v2nodes.com/?page=2
 ...
 配置信息已上传到 GitHub Gist: https://gist.github.com/your_gist_id
----
+```
 
 ---
-## 关键点：
-1. **分隔部分**：使用了 `---` 来分割“脚本运行输出”和“使用方法”两个部分。
-2. **确保图片显示**：图片的链接需要是有效的。请检查图片链接是否为有效地址，如果无法显示，尝试从 GitHub 页面右键点击图片并选择“复制图片地址”。
 
-你可以直接使用这段 Markdown，在渲染后的页面中，脚本输出和使用方法会被清晰地分开，并且图片也会正常显示。
----
+## 使用方法
+
+访问 [GitHub Gist 页面](https://gist.github.com/)，并找到配置信息上传的文件。
+
+![image1](https://github.com/user-attachments/assets/bd375e76-b1d9-4963-87a1-c622a8d37f28)
+![image2](https://github.com/user-attachments/assets/9e927fd0-0e12-4358-a837-6598b424830e)
