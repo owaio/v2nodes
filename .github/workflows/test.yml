@@ -27,7 +27,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
-      # 运行 Python 脚本
-      - name: Run Python script
-        run: |
-          python test.py  # 替换为你要运行的 Python 脚本
+    # 运行 Python 脚本
+    - name: Run Python script
+      run: |
+        python test.py  # 替换为你要运行的 Python 脚本
