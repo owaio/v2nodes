@@ -88,10 +88,12 @@ config内容...
 ...
 配置信息已上传到 GitHub Gist: https://gist.github.com/your_gist_id
 
+```bash
 
-## 使用方法
+## 脚本运行输出
 
 访问 [GitHub Gist 页面](https://gist.github.com/)。找到配置信息上传的文件。
+
 ![image](https://github.com/user-attachments/assets/bd375e76-b1d9-4963-87a1-c622a8d37f28)
 ![image](https://github.com/user-attachments/assets/9e927fd0-0e12-4358-a837-6598b424830e)
 
