@@ -25,7 +25,7 @@ jobs:
 
     - name: Run scraper script
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GIST_ID: ${{ secrets.GIST_ID }}
+        MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        MY_GIST_ID: ${{ secrets.MY_GIST_ID }}
       run: |
         python your_script.py  # 替换为您的 Python 脚本文件名
