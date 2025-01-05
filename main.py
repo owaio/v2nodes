@@ -15,8 +15,8 @@ PAGES = [
 ]
 
 # 从环境变量中获取 GitHub Token 和 Gist ID
-GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # 从环境变量中读取
-GIST_ID = os.getenv('GIST_ID')  # 从环境变量中读取
+GITHUB_TOKEN = os.getenv('MY_GITHUB_TOKEN')  # 从环境变量中读取
+GIST_ID = os.getenv('MY_GIST_ID')  # 从环境变量中读取
 
 # 用于提取每个服务器页面的基本信息
 def extract_server_info(server_url):
