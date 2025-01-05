@@ -1,6 +1,8 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 import time
+import json
 
 # 基础网址
 BASE_URL = "https://zh.v2nodes.com"
@@ -11,6 +13,10 @@ PAGES = [
     "https://zh.v2nodes.com/?page=2",
     "https://zh.v2nodes.com/?page=3"
 ]
+
+# 从环境变量中获取 GitHub Token 和 Gist ID
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # 从环境变量中读取
+GIST_ID = os.getenv('GIST_ID')  # 从环境变量中读取
 
 # 用于提取每个服务器页面的基本信息
 def extract_server_info(server_url):
@@ -46,6 +52,37 @@ def extract_server_links(page_url):
     
     return server_links
 
+# 上传文件到 GitHub Gist
+def upload_to_gist(content, gist_id=None):
+    url = "https://api.github.com/gists"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    
+    # 如果是更新 Gist
+    if gist_id:
+        url = f"https://api.github.com/gists/{gist_id}"
+        # 获取现有 Gist 的信息
+        response = requests.get(url, headers=headers)
+        gist_data = response.json()
+        gist_data['files']['server_configs.txt']['content'] = content
+        response = requests.patch(url, headers=headers, data=json.dumps(gist_data))
+    else:
+        # 创建新的 Gist
+        gist_data = {
+            "description": "V2Nodes Server Configurations",
+            "public": True,
+            "files": {
+                "server_configs.txt": {
+                    "content": content
+                }
+            }
+        }
+        response = requests.post(url, headers=headers, data=json.dumps(gist_data))
+    
+    return response.json()
+
 # 主程序
 def main():
     all_server_configs = []
@@ -71,11 +108,17 @@ def main():
             
             # 给服务器请求加个延时，避免过于频繁的访问
             time.sleep(1)  # 暂停 1 秒钟
-
-    # 输出所有提取的配置
-    print("\n所有提取的配置信息：")
-    for config in all_server_configs:
-        print(config)
+    
+    # 所有配置信息拼接成一个字符串
+    content = "\n".join(all_server_configs)
+    
+    # 上传配置信息到 GitHub Gist
+    gist_response = upload_to_gist(content, GIST_ID)
+    
+    if 'html_url' in gist_response:
+        print(f"配置信息已上传到 GitHub Gist: {gist_response['html_url']}")
+    else:
+        print("上传失败", gist_response)
 
 if __name__ == "__main__":
     main()
