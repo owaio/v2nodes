@@ -32,4 +32,4 @@ jobs:
       # 运行 Python 脚本
       - name: Run Python script
         run: |
-          python testtesttest.py  # 替换为你要运行的 Python 脚本
+          python test.py  # 替换为你要运行的 Python 脚本
