@@ -5,6 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: '0 */2 * * *'  # 每两个小时运行一次
 
 jobs:
   scraper:
