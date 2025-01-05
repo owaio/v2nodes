@@ -39,17 +39,26 @@ def upload_to_gist(content, gist_id=None):
     }
 
     if gist_id:
+        # 读取现有的 Gist 数据
         url = f"https://api.github.com/gists/{gist_id}"
         response = requests.get(url, headers=headers)
-        gist_data = response.json()
-        gist_data['files']['server_configs.txt']['content'] = content
-        response = requests.patch(url, headers=headers, data=json.dumps(gist_data))
+        if response.status_code == 200:
+            gist_data = response.json()
+            # 如果 Gist 中没有 V2Nodes_config.txt 文件，则添加该文件
+            if 'V2Nodes_config.txt' not in gist_data['files']:
+                gist_data['files']['V2Nodes_config.txt'] = {'content': content}
+            else:
+                gist_data['files']['V2Nodes_config.txt']['content'] = content
+            response = requests.patch(url, headers=headers, data=json.dumps(gist_data))
+        else:
+            print(f"读取 Gist 时出错，状态码: {response.status_code}")
     else:
+        # 创建新的 Gist
         gist_data = {
             "description": "V2Nodes Server Configurations",
             "public": True,
             "files": {
-                "server_configs.txt": {
+                "V2Nodes_config.txt": {
                     "content": content
                 }
             }
