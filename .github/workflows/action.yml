@@ -1,4 +1,4 @@
-name: Web Scraper
+name: v2nodes定时自动获取节点
 
 on:
   push:
