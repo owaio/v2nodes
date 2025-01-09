@@ -6,7 +6,7 @@ import json
 import base64
 from concurrent.futures import ThreadPoolExecutor
 import logging
-from tenacity import retry, stop_after_attempt, wait_fixed
+import re
 
 # -------------------------- 配置抓取部分 --------------------------
 BASE_URL = "https://zh.v2nodes.com"
@@ -101,12 +101,18 @@ def decode_base64_data(data):
         logging.error(f"解码 Base64 数据失败: {e}")
         return None
 
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
-def check_gist_access(gist_id):
-    url = f"https://api.github.com/gists/{gist_id}"
-    response = requests.get(url, headers={"Authorization": f"token {GITHUB_TOKEN}"})
-    if response.status_code == 404:
-        raise ValueError("Gist ID 不存在或没有访问权限！")
+def retry_request(func, max_retries=3, delay=2, *args, **kwargs):
+    """自定义重试机制"""
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            attempt += 1
+            logging.warning(f"请求失败: {e}，正在重试... (尝试 {attempt}/{max_retries})")
+            time.sleep(delay)
+    logging.error(f"最大重试次数 {max_retries} 次已达，放弃请求")
+    return None
 
 def process_page(page):
     server_links = extract_server_links(page)
@@ -134,8 +140,8 @@ def main():
     ]
 
     for country in countries:
-        data = fetch_country_data(country)
-        if "vless://" in data:
+        data = retry_request(fetch_country_data, 3, 2, country)
+        if data and "vless://" in data:
             try:
                 base64_data = data.split("vless://", 1)[1].split("#", 1)[0]
                 decoded_data = decode_base64_data(base64_data)
@@ -146,9 +152,6 @@ def main():
 
     # 合并所有配置并上传到 Gist
     content = "\n".join(all_server_configs)
-
-    if GIST_ID:
-        check_gist_access(GIST_ID)
 
     gist_response = upload_to_gist(content, GIST_ID)
 
