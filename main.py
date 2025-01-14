@@ -7,7 +7,7 @@ import base64
 
 # -------------------------- 配置抓取部分 --------------------------
 BASE_URL = "https://zh.v2nodes.com"
-PAGE_START = 8
+PAGE_START = 1
 PAGE_END = 20
 PAGES = [f"{BASE_URL}/?page={i}" for i in range(PAGE_START, PAGE_END + 1)]
 GITHUB_TOKEN = os.getenv('MY_GITHUB_TOKEN')  # 从环境变量中读取
